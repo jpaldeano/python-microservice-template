@@ -5,11 +5,11 @@ from pymongo import MongoClient
 from routes.health.health import HealthApi
 from routes.v1.example.example import ExampleApi
 
-def mustBuildMongoClient():
-    mongoClient = MongoClient(os.environ.get("MONGO_CONNECTION_STRING"), \
-    serverSelectionTimeoutMS=MONGO_TIMEOUT)
+# def mustBuildMongoClient():
+    # mongoClient = MongoClient((os.environ.get("MONGO_CONNECTION_STRING")), \
+    # serverSelectionTimeoutMS=MONGO_TIMEOUT)
 
-    return mongoClient
+    # return mongoClient
 
 def mustBuildRoutes(flask_app, database):
     ''' mustBuildRoutes '''
@@ -18,15 +18,10 @@ def mustBuildRoutes(flask_app, database):
 
     routes = [
         { 
-            "path": "/health",
-            "function": health_api.health,
-            "method": "GET"
-        },
-        { 
             "path": "/v1/example",
             "function": v1_example.example,
             "method": "GET"
-        },
+        }
     ]
 
     for route in routes:
@@ -34,11 +29,13 @@ def mustBuildRoutes(flask_app, database):
 
 
 if __name__ == "__main__":
+    # print(os.environ["FLASK_ENV"])   
+    # print(os.environ["MONGO_CONNECTION_STRING"])
     MONGO_TIMEOUT=10000
     app = Flask(__name__    )
 
-    db = mustBuildMongoClient()
-    mustBuildRoutes(app, db)
+    # db = mustBuildMongoClient()
+    mustBuildRoutes(app, None)
 
     app.run(host='0.0.0.0')
     

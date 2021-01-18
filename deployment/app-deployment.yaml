@@ -5,7 +5,7 @@ metadata:
   labels:
     app: app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: app
@@ -14,14 +14,51 @@ spec:
       labels:
         app: app
     spec:
+      volumes:
+        - persistentVolumeClaim:
+            claimName: example-pvc
+          name: example-vol
       containers:
       - name: app
-        image: gcr.io/striking-figure-294721/app:v1
+        image: gcr.io/lab-health-checks/app:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
-        env:
-        - name: FLASK_ENV
-          value: production
-        - name: MONGO_CONNECTION_STRING
-          value: mongodb://mongodb:27017
+        envFrom:
+          - configMapRef:
+              name: example-cm
+          - secretRef:
+              name: example-secret
+        volumeMounts:
+          - mountPath: /home/volume
+            name: example-vol
+
+---
+apiVersion: v1
+kind: Secret
+metadata: 
+  name: example-secret
+data:
+  MONGO_CONNECTION_STRING: bW9uZ29kYjovL21vbmdvZGI6MjcwMTcK
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-cm
+data:
+  FLASK_ENV: production
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: example-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources: 
+    requests:
+      storage: 20Gi

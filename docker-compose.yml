@@ -3,9 +3,7 @@ services:
   myapp:
     build: .
     ports:
-      - "5000:5000"
-    env_file: 
-      .env    
+      - "5000:5000"  
   mongodb:
     image: mongo:3.4.14
     ports:
